@@ -1,0 +1,23 @@
+{
+  "title": "Gov Param Change",
+  "description": "Update gov params",
+  "changes": [
+    {
+      "subspace": "gov",
+      "key": "depositparams",
+      "value": {"min_deposit":[{"denom":"poc","amount":"100000000000000000000"}],"max_deposit_period":"180000000000"}
+    },
+    {
+      "subspace": "gov",
+      "key": "votingparams",
+      "value": {"voting_period":"180000000000"}
+    }
+  ],
+
+  "deposit": [
+    {
+      "denom": "poc",
+      "amount": "10000000000000000000000"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "title": "Community Pool Spend",
+  "description": "Pay me some poc!",
+  "recipient": "poc1vtk4f6pxxgpd70ug2tkgjg9ypdtnjtjnzcsymd",
+  "amount": [
+    {
+      "denom": "poc",
+      "amount": "172227926078028747420"
+    }
+  ],
+  "deposit": [
+    {
+      "denom": "poc",
+      "amount": "100000000000000000000"
+    }
+  ]
+}

@@ -1,0 +1,126 @@
+version: '2.4'
+services:
+##### machine1: node0, rest-api
+  pocchain0:
+    build: .
+    image: pocchain
+    entrypoint: [ "sh", "run.sh", "--home", "/root/.pocd","--minimum-gas-prices", "10000000000poc"]
+    ports:
+      - "26656-26657:26656-26657"
+    volumes:
+      - ./testnet/node0/pocd:/go/initial-node
+      - ./testnet/node0/poccli:/go/testnet/node0/poccli
+#      - /data/node0/pocd:/root/.pocd
+#      - /data/node0/poccli:/root/.poccli
+    networks:
+      localnet:
+        ipv4_address: 192.168.0.2
+
+  rest_server:
+    image: pocchain
+    entrypoint: [ "./poccli", "rest-server", "--node", "tcp://192.168.0.2:26657","--trust-node", "true", "--laddr", "tcp://0.0.0.0:1317"]
+    ports:
+      - "1317:1317"
+    networks:
+      localnet:
+        ipv4_address: 192.168.0.40
+
+
+  ##### machine2: node1~2, rest-api
+  pocchain1:
+    image: pocchain
+    entrypoint: [ "sh", "run.sh", "--home", "/root/.pocd","--minimum-gas-prices", "10000000000poc"]
+    ports:
+      - "26666-26667:26656-26657"
+    volumes:
+      - ./testnet/node1/pocd:/go/initial-node
+      - ./testnet/node1/poccli:/go/testnet/node1/poccli
+#      - /data/node1/pocd:/root/.pocd
+#      - /data/node1/poccli:/root/.poccli
+    networks:
+      localnet:
+        ipv4_address: 192.168.0.3
+
+  pocchain2:
+    image: pocchain
+    entrypoint: [ "sh", "run.sh", "--home", "/root/.pocd","--minimum-gas-prices", "10000000000poc"]
+    volumes:
+      - ./testnet/node2/pocd:/go/initial-node
+      - ./testnet/node2/poccli:/go/testnet/node2/poccli
+#      - /data/node2/pocd:/root/.pocd
+#      - /data/node2/poccli:/root/.poccli
+    ports:
+      - "26676-26677:26656-26657"
+    networks:
+      localnet:
+        ipv4_address: 192.168.0.4
+
+  ##### machine3: node3~4, rest-api
+  pocchain3:
+    image: pocchain
+    entrypoint: [ "sh", "run.sh", "--home", "/root/.pocd","--minimum-gas-prices", "10000000000poc"]
+    volumes:
+      - ./testnet/node3/pocd:/go/initial-node
+      - ./testnet/node3/poccli:/go/testnet/node3/poccli
+#      - /data/node3/pocd:/root/.pocd
+#      - /data/node3/poccli:/root/.poccli
+    ports:
+      - "26686-26687:26656-26657"
+    networks:
+      localnet:
+        ipv4_address: 192.168.0.5
+
+  pocchain4:
+    image: pocchain
+    entrypoint: [ "sh", "run.sh", "--home", "/root/.pocd","--minimum-gas-prices", "10000000000poc"]
+    volumes:
+      - ./testnet/node4/pocd:/go/initial-node
+      - ./testnet/node4/poccli:/go/testnet/node4/poccli
+#      - /data/node4/pocd:/root/.pocd
+#      - /data/node4/poccli:/root/.poccli
+    ports:
+      - "26696-26697:26656-26657"
+    networks:
+      localnet:
+        ipv4_address: 192.168.0.6
+
+  ##### machine4: node5~6
+  pocchain5:
+    image: pocchain
+    entrypoint: [ "sh", "run.sh", "--home", "/root/.pocd","--minimum-gas-prices", "10000000000poc"]
+    volumes:
+      - ./testnet/node5/pocd:/go/initial-node
+      - ./testnet/node5/poccli:/go/testnet/node5/poccli
+#      - /data/node5/pocd:/root/.pocd
+#      - /data/node5/poccli:/root/.poccli
+    ports:
+      - "26706-26707:26656-26657"
+    networks:
+      localnet:
+        ipv4_address: 192.168.0.7
+
+
+
+
+  pocchain6:
+    image: pocchain
+    entrypoint: [ "sh", "run.sh", "--home", "/root/.pocd","--minimum-gas-prices", "10000000000poc"]
+    volumes:
+      - ./testnet/node6/pocd:/go/initial-node
+      - ./testnet/node6/poccli:/go/testnet/node6/poccli
+  #    - /data/node6/pocd:/root/.pocd
+  #    - /data/node6/poccli:/root/.poccli
+    ports:
+      - "26716-26717:26656-26657"
+    networks:
+      localnet:
+        ipv4_address: 192.168.0.8
+
+networks:
+  localnet:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        -
+          subnet: 192.168.0.0/24

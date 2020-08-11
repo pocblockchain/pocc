@@ -1,0 +1,19 @@
+{
+  "title": "Token Parameters Change",
+  "description": "token parameter change proposal",
+  "symbol": "testtoken",
+  "changes": [
+    {
+      "key": "is_send_enabled",
+      "value": true
+    }
+  ],
+  "deposit": [
+    {
+      "denom": "hbc",
+      "amount": "10000"
+    }
+  ]
+}
+
+
