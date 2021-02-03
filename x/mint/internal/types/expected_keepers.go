@@ -14,6 +14,7 @@ type StakingKeeper interface {
 // SupplyKeeper defines the expected supply keeper
 type SupplyKeeper interface {
 	GetModuleAddress(name string) sdk.AccAddress
+	GetModuleAccount(ctx sdk.Context, name string) exported.ModuleAccountI
 
 	// TODO remove with genesis 2-phases refactor https://github.com/pocblockchain/pocc/issues/2862
 	SetModuleAccount(sdk.Context, exported.ModuleAccountI)

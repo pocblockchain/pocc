@@ -76,14 +76,16 @@ func (AppModuleBasic) IterateGenesisAccounts(cdc *codec.Codec, appGenesis map[st
 type AppModule struct {
 	AppModuleBasic
 	accountKeeper types.AccountKeeper
+	supplyKeepr   types.SupplyKeeper
 }
 
 // NewAppModule creates a new AppModule object
-func NewAppModule(accountKeeper types.AccountKeeper) module.AppModule {
+func NewAppModule(accountKeeper types.AccountKeeper, supplyKeeper types.SupplyKeeper) module.AppModule {
 
 	return module.NewGenesisOnlyAppModule(AppModule{
 		AppModuleBasic: AppModuleBasic{},
 		accountKeeper:  accountKeeper,
+		supplyKeepr: supplyKeeper,
 	})
 }
 
@@ -91,7 +93,7 @@ func NewAppModule(accountKeeper types.AccountKeeper) module.AppModule {
 func (am AppModule) InitGenesis(ctx sdk.Context, data json.RawMessage) []abci.ValidatorUpdate {
 	var genesisState GenesisState
 	ModuleCdc.MustUnmarshalJSON(data, &genesisState)
-	InitGenesis(ctx, ModuleCdc, am.accountKeeper, genesisState)
+	InitGenesis(ctx, ModuleCdc, am.accountKeeper, am.supplyKeepr,genesisState)
 	return []abci.ValidatorUpdate{}
 }
 

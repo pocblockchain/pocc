@@ -89,29 +89,28 @@ func handleMsgNewToken(ctx sdk.Context, keeper Keeper, msg types.MsgNewToken) sd
 func handleMsgInflateToken(ctx sdk.Context, keeper Keeper, msg types.MsgInflateToken) sdk.Result {
 	ctx.Logger().Info("handleMsgInflateToken", "msg", msg)
 
-	if len(msg.Amount) != 1 {
-		return sdk.ErrInvalidTx(fmt.Sprintf("inflate only ONE coin once")).Result()
-	}
 
 	symbol := sdk.Symbol(msg.Amount[0].Denom)
 	if !keeper.IsSendEnabled(ctx, symbol) {
 		return sdk.ErrTransactionIsNotEnabled(fmt.Sprintf("%v is not sendenable", symbol)).Result()
 	}
 
+	//Only token owner can inflate token
 	if msg.From.String() != keeper.GetIssuer(ctx, symbol) {
 		return sdk.ErrInvalidAccount(fmt.Sprintf("%s is not allowed to inflate %v", msg.From, symbol)).Result()
 	}
 
 	//transfer openFee to communityPool
-	issueFee := sdk.NewCoins(sdk.NewCoin(sdk.NativeToken, keeper.GetParams(ctx).NewTokenFee))
-	err := keeper.dk.AddCoinsFromAccountToFeePool(ctx, msg.From, issueFee)
-	if err != nil {
-		return err.Result()
-	}
+	//since issuer have pay when new token, do not charge again when inflate token
+	//issueFee := sdk.NewCoins(sdk.NewCoin(sdk.NativeToken, keeper.GetParams(ctx).NewTokenFee))
+	//err := keeper.dk.AddCoinsFromAccountToFeePool(ctx, msg.From, issueFee)
+	//if err != nil {
+	//	return err.Result()
+	//}
 
 	//minted inflatedCoins
 	inflatedCoins := sdk.NewCoins(msg.Amount[0])
-	err = keeper.sk.MintCoins(ctx, types.ModuleName, inflatedCoins)
+	err := keeper.sk.MintCoins(ctx, types.ModuleName, inflatedCoins)
 	if err != nil {
 		return err.Result()
 	}
@@ -130,7 +129,7 @@ func handleMsgInflateToken(ctx sdk.Context, keeper Keeper, msg types.MsgInflateT
 			sdk.NewAttribute(types.AttributeKeyRecipient, msg.To.String()),
 			sdk.NewAttribute(types.AttributeKeySymbol, symbol.String()),
 			sdk.NewAttribute(types.AttributeKeyAmount, msg.Amount[0].Amount.String()),
-			sdk.NewAttribute(types.AttributeKeyIssueFee, issueFee.String()),
+	//		sdk.NewAttribute(types.AttributeKeyIssueFee, issueFee.String()),
 		),
 	)
 

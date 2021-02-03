@@ -3,12 +3,13 @@ package genaccounts
 import (
 	"github.com/pocblockchain/pocc/codec"
 	sdk "github.com/pocblockchain/pocc/types"
+	"github.com/pocblockchain/pocc/x/auth"
 	authexported "github.com/pocblockchain/pocc/x/auth/exported"
 	"github.com/pocblockchain/pocc/x/genaccounts/internal/types"
 )
 
 // InitGenesis initializes accounts and deliver genesis transactions
-func InitGenesis(ctx sdk.Context, _ *codec.Codec, accountKeeper types.AccountKeeper, genesisState GenesisState) {
+func InitGenesis(ctx sdk.Context, _ *codec.Codec, accountKeeper types.AccountKeeper,  supplyKeeper types.SupplyKeeper, genesisState GenesisState) {
 	genesisState.Sanitize()
 
 	// load the accounts
@@ -17,6 +18,7 @@ func InitGenesis(ctx sdk.Context, _ *codec.Codec, accountKeeper types.AccountKee
 		acc = accountKeeper.NewAccount(ctx, acc) // set account number
 		accountKeeper.SetAccount(ctx, acc)
 	}
+	supplyKeeper.GetModuleAccount(ctx, auth.FeeCollectorName)
 }
 
 // ExportGenesis exports genesis for all accounts

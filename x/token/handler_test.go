@@ -263,7 +263,7 @@ func TestHandleMsgInflateTokenSuccess(t *testing.T) {
 	toAcc = ak.GetAccount(ctx, toAddr)
 	assert.Equal(t, totalAmt.Sub(sendAmt), toAcc.GetCoins().AmountOf("bhd"))
 	fromAcc = ak.GetAccount(ctx, fromAddr)
-	assert.Equal(t, TestNewTokenFee.MulRaw(3), fromAcc.GetCoins().AmountOf(sdk.NativeToken))
+	assert.Equal(t, TestNewTokenFee.MulRaw(4), fromAcc.GetCoins().AmountOf(sdk.NativeToken))
 
 	//check supply
 	supply = supplyKeeper.GetSupply(ctx).GetTotal().AmountOf("bhd")
@@ -272,8 +272,8 @@ func TestHandleMsgInflateTokenSuccess(t *testing.T) {
 
 	//check feepool and distribution Account
 	feePool = dk.GetFeePool(ctx)
-	assert.Equal(t, openFee.AmountOf(sdk.NativeToken).MulRaw(2), feePool.CommunityPool.AmountOf(sdk.NativeToken).TruncateInt())
-	assert.Equal(t, openFee.AmountOf(sdk.NativeToken).MulRaw(2), supplyKeeper.GetModuleAccount(ctx, distribution.ModuleName).GetCoins().AmountOf(sdk.NativeToken))
+	assert.Equal(t, openFee.AmountOf(sdk.NativeToken).MulRaw(1), feePool.CommunityPool.AmountOf(sdk.NativeToken).TruncateInt())
+	assert.Equal(t, openFee.AmountOf(sdk.NativeToken).MulRaw(1), supplyKeeper.GetModuleAccount(ctx, distribution.ModuleName).GetCoins().AmountOf(sdk.NativeToken))
 
 }
 
@@ -360,24 +360,26 @@ func TestHandleMsgInflateTokenFail(t *testing.T) {
 	res = handleMsgInflateToken(ctx, tk, infateMsg)
 	assert.Equal(t, sdk.CodeTransactionIsNotEnabled, res.Code)
 
-	//fail because  more than 1 coins
-	tk.EnableSend(ctx, "bhd")
-	infateMsg = types.NewMsgInflateToken(fromAddr, toAddr, inflateCoins.Add(sdk.NewCoins(sdk.NewCoin("bht", sdk.NewInt(100)))))
-	res = handleMsgInflateToken(ctx, tk, infateMsg)
-	assert.Equal(t, sdk.CodeInvalidTx, res.Code)
+	//Obsolete, more than 1 coins is checked in MsgInflateToken's ValidateBasic()
+	//fail because  more than 1 coins,
+
+	//infateMsg = types.NewMsgInflateToken(fromAddr, toAddr, inflateCoins.Add(sdk.NewCoins(sdk.NewCoin("bht", sdk.NewInt(100)))))
+	//res = handleMsgInflateToken(ctx, tk, infateMsg)
+	//assert.Equal(t, sdk.CodeInvalidTx, res.Code)
 
 	//fail because no authority
+	tk.EnableSend(ctx, "bhd")
 	infateMsg = types.NewMsgInflateToken(toAddr, toAddr, inflateCoins)
 	res = handleMsgInflateToken(ctx, tk, infateMsg)
 	assert.Equal(t, sdk.CodeInvalidAccount, res.Code)
 
 	//insufficient openFee
-	param := tk.GetParams(ctx)
-	param.NewTokenFee = TestNewTokenFee.MulRaw(5)
-	tk.SetParams(ctx, param)
-	infateMsg = types.NewMsgInflateToken(fromAddr, toAddr, inflateCoins)
-	res = handleMsgInflateToken(ctx, tk, infateMsg)
-	assert.Equal(t, sdk.CodeInsufficientCoins, res.Code)
+	//param := tk.GetParams(ctx)
+	//param.NewTokenFee = TestNewTokenFee.MulRaw(5)
+	//tk.SetParams(ctx, param)
+	//infateMsg = types.NewMsgInflateToken(fromAddr, toAddr, inflateCoins)
+	//res = handleMsgInflateToken(ctx, tk, infateMsg)
+	//assert.Equal(t, sdk.CodeInsufficientCoins, res.Code)
 
 	ti = tk.GetTokenInfo(ctx, "bhd")
 	assert.Equal(t, "bhd", ti.Symbol.String())

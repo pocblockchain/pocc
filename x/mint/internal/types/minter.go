@@ -40,8 +40,7 @@ func InitialMinter(currentYearIndex uint64, annualProvisions sdk.Dec) Minter {
 	return NewMinter(currentYearIndex, annualProvisions)
 }
 
-// DefaultInitialMinter returns a default initial Minter object for a new chain
-// which uses an inflation rate of 13%.
+//DefaultInitialMinter set the initial minter 
 func DefaultInitialMinter(annualProvisions sdk.Dec) Minter {
 	return InitialMinter(0, annualProvisions)
 }

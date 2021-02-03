@@ -48,9 +48,8 @@ func handleMsgUnjail(ctx sdk.Context, msg MsgUnjail, k Keeper) sdk.Result {
 	consAddr := sdk.ConsAddress(validator.GetConsPubKey().Address())
 
 	info, found := k.getValidatorSigningInfo(ctx, consAddr)
-	if !found {
-		return ErrNoValidatorForAddress(k.codespace).Result()
-	}
+	// Allow Unjail of Non-Bonded Jailed Validator
+	if found {
 
 	// cannot be unjailed if tombstoned
 	if info.Tombstoned {
@@ -60,6 +59,7 @@ func handleMsgUnjail(ctx sdk.Context, msg MsgUnjail, k Keeper) sdk.Result {
 	// cannot be unjailed until out of jail
 	if ctx.BlockHeader().Time.Before(info.JailedUntil) {
 		return ErrValidatorJailed(k.codespace).Result()
+	}
 	}
 
 	k.sk.Unjail(ctx, consAddr)

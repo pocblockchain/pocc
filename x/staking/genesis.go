@@ -172,10 +172,12 @@ func ExportGenesis(ctx sdk.Context, keeper Keeper) types.GenesisState {
 	}
 }
 
+//Export validator addresses #6529
 // WriteValidators returns a slice of bonded genesis validators.
 func WriteValidators(ctx sdk.Context, keeper Keeper) (vals []tmtypes.GenesisValidator) {
 	keeper.IterateLastValidators(ctx, func(_ int64, validator exported.ValidatorI) (stop bool) {
 		vals = append(vals, tmtypes.GenesisValidator{
+			Address: validator.GetConsAddr().Bytes(),
 			PubKey: validator.GetConsPubKey(),
 			Power:  validator.GetConsensusPower(),
 			Name:   validator.GetMoniker(),

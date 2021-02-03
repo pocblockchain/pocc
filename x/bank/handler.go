@@ -85,9 +85,6 @@ func handleMsgMultiSend(ctx sdk.Context, k keeper.Keeper, msg types.MsgMultiSend
 			return sdk.ErrUnauthorized(fmt.Sprintf("%s is not allowed to receive transactions", out.Address)).Result()
 		}
 
-		if !k.IsCoinsSendEnabled(ctx, out.Coins) {
-			return types.ErrSendDisabled(k.Codespace()).Result()
-		}
 	}
 
 	err := k.InputOutputCoins(ctx, msg.Inputs, msg.Outputs)
@@ -173,9 +170,6 @@ func handleMsgBonusSend(ctx sdk.Context, k keeper.Keeper, msg types.MsgBonusSend
 			return sdk.ErrUnauthorized(fmt.Sprintf("%s is not allowed to receive transactions", out.Address)).Result()
 		}
 
-		if !k.IsCoinsSendEnabled(ctx, out.Coins) {
-			return types.ErrSendDisabled(k.Codespace()).Result()
-		}
 		outAddr[i] = out.Address.String()
 	}
 
@@ -219,9 +213,6 @@ func handleMsgReclaimSend(ctx sdk.Context, k keeper.Keeper, msg types.MsgReclaim
 			return sdk.ErrUnauthorized(fmt.Sprintf("%s is not allowed to receive transactions", out.Address)).Result()
 		}
 
-		if !k.IsCoinsSendEnabled(ctx, out.Coins) {
-			return types.ErrSendDisabled(k.Codespace()).Result()
-		}
 		outAddr[i] = out.Address.String()
 	}
 

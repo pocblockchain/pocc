@@ -52,13 +52,15 @@ func tally(ctx sdk.Context, keeper Keeper, proposal Proposal) (passes bool, burn
 	})
 
 	keeper.IterateVotes(ctx, proposal.ProposalID, func(vote types.Vote) bool {
+		// Sum validator operator's all voting power #5107
 		// if validator, just record it in the map
 		// if delegator tally voting power
 		valAddrStr := sdk.ValAddress(vote.Voter).String()
 		if val, ok := currValidators[valAddrStr]; ok {
 			val.Vote = vote.Option
 			currValidators[valAddrStr] = val
-		} else {
+		}
+
 			// iterate over all delegations from voter, deduct from any delegated-to validators
 			keeper.sk.IterateDelegations(ctx, vote.Voter, func(index int64, delegation exported.DelegationI) (stop bool) {
 				valAddrStr := delegation.GetValidatorAddr().String()
@@ -67,8 +69,10 @@ func tally(ctx sdk.Context, keeper Keeper, proposal Proposal) (passes bool, burn
 					val.DelegatorDeductions = val.DelegatorDeductions.Add(delegation.GetShares())
 					currValidators[valAddrStr] = val
 
-					delegatorShare := delegation.GetShares().Quo(val.DelegatorShares)
-					votingPower := delegatorShare.MulInt(val.BondedTokens)
+				//Fix #7640: tally calculation precision error #7641
+				//delegatorShare := delegation.GetShares().Quo(val.DelegatorShares)
+				//votingPower := delegatorShare.MulInt(val.BondedTokens)
+				votingPower := delegation.GetShares().MulInt(val.BondedTokens).Quo(val.DelegatorShares)
 
 					results[vote.Option] = results[vote.Option].Add(votingPower)
 					totalVotingPower = totalVotingPower.Add(votingPower)
@@ -76,7 +80,6 @@ func tally(ctx sdk.Context, keeper Keeper, proposal Proposal) (passes bool, burn
 
 				return false
 			})
-		}
 
 		keeper.deleteVote(ctx, vote.ProposalID, vote.Voter)
 		return false
@@ -89,8 +92,10 @@ func tally(ctx sdk.Context, keeper Keeper, proposal Proposal) (passes bool, burn
 		}
 
 		sharesAfterDeductions := val.DelegatorShares.Sub(val.DelegatorDeductions)
-		fractionAfterDeductions := sharesAfterDeductions.Quo(val.DelegatorShares)
-		votingPower := fractionAfterDeductions.MulInt(val.BondedTokens)
+		//Fix #7640: tally calculation precision error #7641
+		//fractionAfterDeductions := sharesAfterDeductions.Quo(val.DelegatorShares)
+		//votingPower := fractionAfterDeductions.MulInt(val.BondedTokens)
+		votingPower := sharesAfterDeductions.MulInt(val.BondedTokens).Quo(val.DelegatorShares)
 
 		results[val.Vote] = results[val.Vote].Add(votingPower)
 		totalVotingPower = totalVotingPower.Add(votingPower)

@@ -100,7 +100,7 @@ func getInitChainer(mapp *mock.App, stakingkeeper staking.Keeper, accountKeeper 
 		//inital minter
 		var mintGenesis = DefaultGenesisState()
 
-		InitGenesis(ctx, keeper, mintGenesis)
+		InitGenesis(ctx, keeper, supplyKeeper, mintGenesis)
 
 		return abci.ResponseInitChain{
 			Validators: validators,

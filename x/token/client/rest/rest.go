@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"github.com/pocblockchain/pocc/client/context"
 	sdk "github.com/pocblockchain/pocc/types"
 	"github.com/pocblockchain/pocc/types/rest"
@@ -11,7 +12,7 @@ import (
 	govrest "github.com/pocblockchain/pocc/x/gov/client/rest"
 	govtypes "github.com/pocblockchain/pocc/x/gov/types"
 	"github.com/pocblockchain/pocc/x/token/types"
-	"github.com/gorilla/mux"
+
 )
 
 // RegisterRoutes registers staking-related REST handlers to a router
